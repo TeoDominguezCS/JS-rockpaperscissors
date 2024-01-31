@@ -1,40 +1,29 @@
-const message = "Welcome to Rock, Paper, Scissors!\nGet Ready for a best of five match to the DEATH"
-alert(message);
-game();
-
-function game(){
-    let playerScore = 0;
-    let compScore = 0;
-    for(let i = 1; i < 6 ; i++){
-        if(playerScore === 3 || compScore === 3){
-            break;
-        }
-        let playerSelection = prompt("Game " + i + ": Pick your weapon: Rock, Paper, OR, Scissors").toLowerCase();
-        let computerSelection = getComputerChoice();
-        let result = playRound(playerSelection, computerSelection);
-        if(result === 1){
-            playerScore++;
-        }
-        else if(result === 0){
-            compScore++;
-        }
-        else{
-            i--
-            console.log("Tie :(");
-        }
+//queryselecting all buttons 
+const button = document.querySelectorAll("button");
+//adding click event listener with input for one round
+button.forEach(button => { 
+    button.addEventListener('click', function(){
+        playRound(button.value, getComputerChoice());
+    })
+});
+const result = document.querySelector('#resultMessage');
+const computer = document.querySelector('#computerMessage');
+function resultMessage(score, playerSelection, computerSelection){
+    //displaying computer pick
+    computer.textContent = "Computer picks: " + computerSelection;
+    //win message
+    if(score == 1){
+       result.textContent = playerSelection + " beats " + computerSelection + " you win!";
     }
-    console.log("Player Score: " + playerScore);
-    console.log("Computer Score: " + compScore);
+    //lose message
+    else if(score == 0){
+        result.textContent = computerSelection + " beats " + playerSelection + " you lose!";
+    }
+    //tie message
+    else{
+        result.textContent = "Tie!";
+    }
 }
-
-
-function tieBreak(){
-    let tieMessage = "Tiebreaker!\nMake another choice:";
-    playerSelection = prompt(tieMessage).toLowerCase();
-    let computerSelection = getComputerChoice();
-    playRound(playerSelection, computerSelection);
-}
-
 function getComputerChoice(){
     let random = Math.floor(Math.random() * 3) ;
     switch(random){
@@ -48,46 +37,39 @@ function getComputerChoice(){
             return "Error";
     }
 }
-
-function playRound(playerSelection, computerSelection){
-    if(playerSelection == computerSelection){
-        console.log("Tie! No one gets points! Lets try again.");
-        return -1;
-    }
-    else if(playerSelection == "rock"){
-        if (computerSelection == "paper"){
-            console.log("Computer picked Paper. You Lose.");
-            return 0;
-        }
-        else{
-            console.log("Computer picked Scissors. You Win!");
-            return 1;
-        }
-
-    }
-    else if(playerSelection == "paper"){
-        if(computerSelection == "scissors"){
-            console.log("Computer picked Scissors. You Lose.");
-            return 0;
-        }
-        else{
-            console.log("Computer picked Rock. You Win!");
-            return 1;
-        }
-    }
-    else if(playerSelection == "scissors"){
-        if(computerSelection == "rock"){
-            console.log("Computer picked Rock. You Lose.");
-            return 0;
-        }
-        else{
-            console.log("Computer picked Paper. You Win!");
-            return 1;
-        }
+function updateScore(score){
+    let playerScore = document.querySelector('#playerScore');
+    let computerScore = document.querySelector('#computerScore');
+    if(score == 1){
+        let num = Number(playerScore.textContent);
+        num++;
+        playerScore.textContent = num;
     }
     else{
-        console.log("Invalid Entry! Point Goes to computer for human error!\nChoices are: Rock, Paper, Scissors");
-        return 0;
+        let num = Number(computerScore.textContent);
+        num++;
+        computerScore.textContent = num;
+    }   
+
+}
+function playRound(playerSelection, computerSelection){
+    //tie
+    if(playerSelection == computerSelection){
+        resultMessage(-1,playerSelection, computerSelection);
+        
+    }
+    //player wins
+    else if(playerSelection == "rock" && computerSelection == "scissors" ||
+            playerSelection == "scissors" && computerSelection == "paper" ||
+            playerSelection == "paper" && computerSelection == "rock"
+    ){
+            updateScore(1)  
+            resultMessage(1,playerSelection, computerSelection);
+    }
+    //player loses
+    else{
+        updateScore(0);
+        resultMessage(0,playerSelection, computerSelection);
     }
 }
     
